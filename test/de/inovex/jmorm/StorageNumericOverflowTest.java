@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
  * 
  * @author Tim Roes <tim.roes@inovex.de>
  */
-public class StorageNumericOverflow extends AbstractStorageTest {
+public class StorageNumericOverflowTest extends AbstractStorageTest {
 	
 	private Config config;
 	

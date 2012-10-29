@@ -49,7 +49,7 @@ class CollectionConverter implements Converter {
 	@Override
 	public Object decode(Object dbval, Class<?> objectType, Field field) {
 		
-		if(dbval == null || !Collection.class.isAssignableFrom(objectType))
+		if(!Collection.class.isAssignableFrom(objectType))
 			return null;
 		
 		Class<?> componentType = ReflectionUtil.getCollectionType(field.getGenericType());

@@ -22,8 +22,10 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
- *
- * // TODO Need Map serializer/deserializer
+ * The {@link ObjectConverter} is responsible for converting an object from database
+ * or to database. It just inspects the object's type and pass it to the 
+ * corresponding {@link Converter} for that type.
+ * 
  * @author Tim Roes <tim.roes@inovex.de>
  */
 class ObjectConverter implements Converter {
@@ -47,7 +49,7 @@ class ObjectConverter implements Converter {
 	@Override
 	public Object encode(Object fieldval, Class<?> fieldType, Field field) {
 		
-		Object val = null;
+		Object val;
 	
 		if(fieldval == null) {
 			return null;
@@ -76,7 +78,9 @@ class ObjectConverter implements Converter {
 	
 		Object obj;
 		
-		if(ReflectionUtil.isPseudoPrimitive(objectType)) {
+		if(dbval == null) {
+			return null;
+		} else if(ReflectionUtil.isPseudoPrimitive(objectType)) {
 			obj = primitiveConverter.decode(dbval, objectType, field);
 		} else if(objectType.isArray()) {
 			obj = arrayConverter.decode(dbval, objectType, field);

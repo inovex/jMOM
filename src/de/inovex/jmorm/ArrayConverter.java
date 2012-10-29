@@ -40,7 +40,7 @@ class ArrayConverter implements Converter {
 	@Override
 	public Object decode(Object dbval, Class<?> objectType, Field field) {
 		
-		if(!objectType.isArray() || dbval == null)
+		if(!objectType.isArray())
 			return null;
 		
 		// Every array will be returned by the MongoDB driver as a list...
@@ -79,8 +79,7 @@ class ArrayConverter implements Converter {
 				continue;
 			
 			// Set the specific array element
-			Array.set(array, i, ob);
-			i++;
+			Array.set(array, i++, ob);
 		
 		}
 		
@@ -103,9 +102,6 @@ class ArrayConverter implements Converter {
 	 */
 	@Override
 	public Object encode(Object fieldval, Class<?> fieldType, Field field) {
-		
-		if(fieldval == null)
-			return null;
 		
 		// If value is not an array or is a primitive array, return unmodified.
 		if(!fieldType.isArray() || ReflectionUtil.isPseudoPrimitive(fieldType.getComponentType()))

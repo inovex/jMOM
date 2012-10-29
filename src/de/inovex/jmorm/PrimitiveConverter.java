@@ -24,7 +24,20 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 /**
- *
+ * This {@link Converter} is responsible for converting primitive and
+ * pseudo primitive (like {@link Date} data types. If a data type is pseudo
+ * primitive is determined by the {@link ReflectionUtil#isPseudoPrimitive(java.lang.Class)}
+ * utility method.
+ * 
+ * Since all numbers are either {@link Integer}, {@link Double} or {@link Long}
+ * coming from database, the main purpose of this converter is to check if,
+ * the number is in the range of the requested datatype. If the value is outside
+ * the range of the requested datatype, the {@link Config} defines the behavior 
+ * for that value.
+ * 
+ * @see Config#getNumericBehavior()
+ * @see Config#getCharacterBehavior() 
+ * 
  * @author Tim Roes <tim.roes@inovex.de>
  */
 class PrimitiveConverter implements Converter {
@@ -41,7 +54,7 @@ class PrimitiveConverter implements Converter {
 	@Override
 	public Object decode(Object dbval, Class<?> objectType, Field field) {
 		
-		if(dbval == null || !ReflectionUtil.isPseudoPrimitive(objectType))
+		if(!ReflectionUtil.isPseudoPrimitive(objectType))
 			return null;
 		
 		Object val = dbval;
@@ -58,9 +71,8 @@ class PrimitiveConverter implements Converter {
 		} else if(objectType == Character.TYPE || objectType == Character.class) {
 			val = getCharacter(dbval.toString());
 		} else if(objectType == Integer.TYPE || objectType == Integer.class) {
-			val = Integer.valueOf(dbval.toString());
-		} else if(objectType == Long.TYPE || objectType == Long.class) {
-			val = Long.valueOf(dbval.toString());
+			longVal = checkRange(Long.valueOf(dbval.toString()), Integer.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
+			val = longVal.intValue();
 		} else if(objectType == Double.TYPE || objectType == Double.class) {
 			val = Double.valueOf(dbval.toString());
 		} else if(Date.class.isAssignableFrom(objectType)) {

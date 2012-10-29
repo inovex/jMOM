@@ -30,6 +30,8 @@ interface Converter {
 	 * This method will get a {@code Field} of an object and the value from
 	 * an {@link DBObject}. It must then convert this value to an {@link Object},
 	 * that can be assigned to the specified {@code Field}.
+	 * It is save to assume, that {@code fieldval} is never {@code null}. The
+	 * calling instance has to filter out {@code null} values.
 	 * 
 	 * @param dbval The value read from the specific field from the database.
 	 * @param fieldType The {@link Class} of the object, that should be deserialized.
@@ -46,6 +48,8 @@ interface Converter {
 	 * The returning {@link Object} must be serializable by the MongoDB driver.
 	 * Meaning it should either be a simple type, that can be serialized, or
 	 * some kind of {@link DBObject} for more complex types.
+	 * It is save to assume, that {@code fieldval} is never {@code null}. The
+	 * calling instance has to filter out {@code null} values.
 	 * 
 	 * @param fieldval The value of the field.
 	 * @param fieldType The {@link Class} of the object, that should be serialized.

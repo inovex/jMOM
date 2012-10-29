@@ -16,7 +16,9 @@
 package de.inovex.jmorm.exception;
 
 /**
- *
+ * This exception indicates, that a java object could not successfully be transformed
+ * to a database entry.
+ * 
  * @author Tim Roes <tim.roes@inovex.de>
  */
 public class SerializationException extends RuntimeException {

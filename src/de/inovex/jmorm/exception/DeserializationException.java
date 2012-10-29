@@ -16,6 +16,8 @@
 package de.inovex.jmorm.exception;
 
 /**
+ * This exception indicates, that the transforming of a database entry to
+ * a java object has failed.
  * 
  * @author Tim Roes <tim.roes@inovex.de>
  */

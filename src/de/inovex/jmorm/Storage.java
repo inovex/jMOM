@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.bson.BSONEncoder;
+import org.bson.BasicBSONEncoder;
 import org.bson.types.ObjectId;
 
 /**
@@ -86,7 +88,7 @@ public class Storage {
 	
 	private CollectionResolver collectionResolver = new CanonicalNameResolver();
 	
-	private ClassConverter objectConverter = new ClassConverter(this);
+	private ClassConverter classConverter = new ClassConverter(this);
 	private HashMap<ObjectId, Object> objectIds = new HashMap<ObjectId, Object>();
 
 	private Storage(DB db) {
@@ -125,7 +127,7 @@ public class Storage {
 	
 	DBObject saveObject(Object obj) {
 		
-		DBObject dbobj = objectConverter.encode(obj);
+		DBObject dbobj = classConverter.encode(obj);
 		ObjectId id = getId(obj);
 		if(id != null) {
 			dbobj.put("_id", id);
@@ -167,7 +169,7 @@ public class Storage {
 		DBCollection col = db.getCollection(collectionResolver.getCollectionForClass(clazz));
 		DBObject dbobj = col.findOne();
 		ObjectId id = (ObjectId)dbobj.get("_id");
-		T obj = objectConverter.decode(dbobj, clazz);
+		T obj = classConverter.decode(dbobj, clazz);
 		objectIds.put(id, obj);
 		return obj;
 		
@@ -185,7 +187,7 @@ public class Storage {
 				
 				DBObject dbobj = cursor.next();
 				ObjectId id = (ObjectId)dbobj.get("_id");
-				T obj = objectConverter.decode(dbobj, clazz);
+				T obj = classConverter.decode(dbobj, clazz);
 				objects.add(obj);
 				objectIds.put(id, obj);
 				
@@ -198,12 +200,18 @@ public class Storage {
 
 	}
 	
+	public byte[] getBSON(Object obj) {
+		BSONEncoder encoder = new BasicBSONEncoder();
+		DBObject dbobj = classConverter.encode(obj);
+		return encoder.encode(dbobj);
+	}
+	
 	<T> T convertObject(DBObject dbobj, Class<T> clazz) {
 		Object get = objectIds.get(dbobj.get("_id"));
 		if(get != null && (get.getClass() == clazz)) {
 			return (T)get;
 		}
-		return objectConverter.decode(dbobj, clazz);
+		return classConverter.decode(dbobj, clazz);
 	}
 	
 	/**

@@ -24,7 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * This class is responsible for the translation of Java objects to {@link DBObject DBObjects}.
+ * 
  * @author Tim Roes <tim.roes@inovex.de>
  */
 class ClassConverter {
@@ -35,6 +36,16 @@ class ClassConverter {
 		this.fieldConverter = new ObjectConverter(storage);
 	}
 	
+	/**
+	 * Encode a Java object to a {@link DBObject}, that can be written to database
+	 * or serialized to BSON with help of the {@link org.bson.BSONEncoder BSONEncoder}.
+	 * 
+	 * @param obj A Java object.
+	 * @return The java object transformed to a {@link DBObject}.
+	 * 
+	 * @throws SerializationException In case the object could not be converted
+	 *		to a {@link DBObject}.
+	 */
 	DBObject encode(Object obj) {
 		
 		// Find all fields in object
@@ -71,6 +82,17 @@ class ClassConverter {
 		
 	}
 	
+	/**
+	 * Transforms an {@link DBObject} back to a java {@link Object} of the 
+	 * given type.
+	 * 
+	 * @param dbobj The {@link DBObject} to transform to an object.
+	 * @param clazz The {@link Class} of the java object to transform it to.
+	 * @return The object created from the given {@link DBObject}.
+	 * 
+	 * @throws DeserializationException WIll be thrown, if the {@link DBObject}
+	 *		cannot successfully be transformed to an object of the given type.
+	 */
 	<T> T decode(DBObject dbobj, Class<T> clazz) {
 		
 		FieldList fields = FieldList.valueOf(clazz);	
@@ -102,6 +124,12 @@ class ClassConverter {
 		return obj;
 	}
 	
+	/**
+	 * Create a new instance of the given {@link Class}.
+	 * 
+	 * @param clazz The {@link Class} from which a new instance should be created.
+	 * @return An instance of the given class.
+	 */
 	private static <T> T newInstance(Class<T> clazz) {
 		
 		T obj = null;

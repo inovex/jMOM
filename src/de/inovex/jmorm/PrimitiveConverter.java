@@ -66,15 +66,17 @@ class PrimitiveConverter implements Converter {
 		} else if(objectType == Short.TYPE || objectType == Short.class) {
 			longVal = checkRange(Long.valueOf(dbval.toString()), Short.class, Short.MIN_VALUE, Short.MAX_VALUE);
 			val = longVal.shortValue();
-		} else if(objectType == Float.TYPE || objectType == Float.class) {
-			val = Float.parseFloat(dbval.toString());
-		} else if(objectType == Character.TYPE || objectType == Character.class) {
-			val = getCharacter(dbval.toString());
 		} else if(objectType == Integer.TYPE || objectType == Integer.class) {
 			longVal = checkRange(Long.valueOf(dbval.toString()), Integer.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			val = longVal.intValue();
+		} else if(objectType == Long.TYPE || objectType == Long.class) {
+			val = Long.valueOf(dbval.toString());
+		} else if(objectType == Float.TYPE || objectType == Float.class) {
+			val = Float.parseFloat(dbval.toString());
 		} else if(objectType == Double.TYPE || objectType == Double.class) {
 			val = Double.valueOf(dbval.toString());
+		} else if(objectType == Character.TYPE || objectType == Character.class) {
+			val = getCharacter(dbval.toString());
 		} else if(Date.class.isAssignableFrom(objectType)) {
 			val = dbval;
 			if(dbval instanceof String) {

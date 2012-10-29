@@ -103,12 +103,11 @@ class CollectionConverter implements Converter {
 			return list;
 
 		} catch(InstantiationException ex) {
-			// TODO
+			throw new DeserializationException("Cannot instantiate collection.", ex);
 		} catch(IllegalAccessException ex) {
 			// Should not occur
+			throw new DeserializationException("Cannot instantiate collection.", ex);
 		}
-
-		return list;
 		
 	}
 	

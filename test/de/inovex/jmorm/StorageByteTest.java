@@ -68,38 +68,4 @@ public class StorageByteTest extends AbstractStorageTest {
 		
 	}
 	
-	@Test(expected=NumericException.class)
-	public void testByteAboveMaximumException() {	
-		testOverflowBehavior(Config.NumericBehavior.EXCEPTION, Byte.MAX_VALUE + 1, null);		
-		fail("Expected NumericException didn't occur.");
-	}
-	
-	@Test
-	public void testByteAboveMaximumOverflow() {
-		testOverflowBehavior(Config.NumericBehavior.OVERFLOW, Byte.MAX_VALUE + 1, 
-				Byte.valueOf((byte)(Byte.MAX_VALUE + 1)));
-	}
-	
-	@Test
-	public void testByteAboveMaximumZero() {
-		testOverflowBehavior(Config.NumericBehavior.ZERO_VALUE, Byte.MAX_VALUE + 1, 
-				Byte.valueOf((byte)0));
-	}
-	
-	private void testOverflowBehavior(Config.NumericBehavior numericBehavior, Object valueToSave, Object expectedValue) {
-		
-		config.setNumericBehavior(numericBehavior);
-		storage.setConfig(config);
-		
-		DBObject dbobj = new BasicDBObject("byteVal", valueToSave);
-		dbobj.put("byteClassVal", valueToSave);
-		
-		storage.saveDBObject(dbobj, PseudoPrimitiveTestClass.class.getCanonicalName());
-	
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
-		assertEquals("byte field doesn't match.", expectedValue, res.getByteVal());
-		assertEquals("Byte field doesn't match.", expectedValue, res.getByteClassVal());
-		
-	}
-	
 }

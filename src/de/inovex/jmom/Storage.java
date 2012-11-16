@@ -27,10 +27,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.bson.BSONEncoder;
-import org.bson.BasicBSONEncoder;
 import org.bson.types.ObjectId;
 
 /**
@@ -39,7 +38,28 @@ import org.bson.types.ObjectId;
  */
 public class Storage {
 
-	private static Map<DB, Storage> storages = new HashMap<DB, Storage>();
+	private static Map<DBHandler, Storage> storages = new HashMap<DBHandler, Storage>();
+	
+	/**
+	 * Get a storage instance with a given {@link DBHandler}.
+	 * 
+	 * @param dbhandler The {@link DBHandler}, that should handle database connection.
+	 * @return The {@link Storage} for the given {@link DBHandler}.
+	 */
+	public static Storage getInstance(DBHandler dbhandler) {
+		
+		if(dbhandler == null) {
+			throw new IllegalArgumentException("dbhandler is not allowed to be null.");
+		}
+		
+		Storage storage = storages.get(dbhandler);
+		if(storage == null) {
+			storage = new Storage(dbhandler);
+			storages.put(dbhandler, storage);
+		}
+		return storage;
+		
+	}
 	
 	/**
 	 * Get a storage instance for a {@link StorageInfo}.
@@ -67,23 +87,21 @@ public class Storage {
 	 * @return The {@link Storage} for the given {@code DB}.
 	 */
 	public static Storage getInstance(DB db) {
+		
 		if(db == null) {
 			throw new IllegalArgumentException("DB is not allowed to be null.");
 		}
 		
-		Storage storage = storages.get(db);
-		if(storage == null) {
-			storage = new Storage(db);
-			storages.put(db, storage);
-		}
-		return storage;
+		return getInstance(new MongoDBHandler(db));
+		
 	}
 	
 	// ------------------
 	// Instance
 	// ------------------
 	
-	private DB db;
+	private DBHandler dbhandler;
+	//private DB db;
 	private Config config;
 	
 	private CollectionResolver collectionResolver = new CanonicalNameResolver();
@@ -91,8 +109,8 @@ public class Storage {
 	private ClassConverter classConverter = new ClassConverter(this);
 	private HashMap<ObjectId, Object> objectIds = new HashMap<ObjectId, Object>();
 
-	private Storage(DB db) {
-		this.db = db;
+	private Storage(DBHandler dbhandler) {
+		this.dbhandler = dbhandler;
 		this.config = new Config();
 	}
 	
@@ -119,7 +137,7 @@ public class Storage {
 	/**
 	 * Stores an object in the database.
 	 * 
-	 * @param obj The object to save inside the database.
+	 * @param obj The object to onSave inside the database.
 	 */
 	public void save(Object obj) {
 		saveObject(obj);		
@@ -133,7 +151,8 @@ public class Storage {
 			dbobj.put("_id", id);
 		}
 		
-		db.getCollection(collectionResolver.getCollectionForClass(obj.getClass())).save(dbobj);
+		dbhandler.onSave(collectionResolver.getCollectionForClass(obj.getClass()), dbobj);
+		//db.getCollection(collectionResolver.getCollectionForClass(obj.getClass())).onSave(dbobj);
 		if(id == null) {
 			id = (ObjectId)dbobj.get("_id");
 			objectIds.put(id, obj);
@@ -144,15 +163,17 @@ public class Storage {
 	
 	DBObject saveDBObject(DBObject dbobj, String collection) {
 		
-		db.getCollection(collection).save(dbobj);
+		//db.getCollection(collection).onSave(dbobj);
+		dbhandler.onSave(collection, dbobj);
 		return dbobj;
 	}
 	
 	DBRef createRef(DBObject obj, Class<?> clazz) {
-		
-		DBRef ref = new DBRef(db, collectionResolver.getCollectionForClass(clazz), obj.get("_id"));
-		return ref;
-		
+		return dbhandler.onCreateRef(collectionResolver.getCollectionForClass(clazz), obj);
+	}
+	
+	DBObject fetchRef(DBRef dbref) {
+		return dbhandler.onFetchRef(dbref);
 	}
 	
 	private ObjectId getId(Object obj) {
@@ -166,8 +187,9 @@ public class Storage {
 	
 	public <T> T findOne(Class<T> clazz) {
 		
-		DBCollection col = db.getCollection(collectionResolver.getCollectionForClass(clazz));
-		DBObject dbobj = col.findOne();
+		DBObject dbobj = dbhandler.onGetOne(collectionResolver.getCollectionForClass(clazz));
+		//DBCollection col = db.getCollection(collectionResolver.getCollectionForClass(clazz));
+		//DBObject dbobj = col.findOne();
 		ObjectId id = (ObjectId)dbobj.get("_id");
 		T obj = classConverter.decode(dbobj, clazz);
 		objectIds.put(id, obj);
@@ -175,42 +197,35 @@ public class Storage {
 		
 	}
 	
-	public <T> Collection<T> findAll(Class<T> clazz) {
+	public <T> List<T> findAll(Class<T> clazz) {
 		
-		Collection<T> objects = new ArrayList<T>();
+		List<T> objects = new ArrayList<T>();
 		
-		DBCollection col = db.getCollection(collectionResolver.getCollectionForClass(clazz));
-		DBCursor cursor = col.find();
-		
-		try {
-			while(cursor.hasNext()) {
+		Collection<DBObject> dbobjects = dbhandler.onGet(collectionResolver.getCollectionForClass(clazz));
 				
-				DBObject dbobj = cursor.next();
-				ObjectId id = (ObjectId)dbobj.get("_id");
-				T obj = classConverter.decode(dbobj, clazz);
-				objects.add(obj);
-				objectIds.put(id, obj);
-				
-			}
-		} finally {
-			cursor.close();
+		for(DBObject dbobj : dbobjects) {
+
+			ObjectId id = (ObjectId)dbobj.get("_id");
+			T obj = classConverter.decode(dbobj, clazz);
+			objects.add(obj);
+			objectIds.put(id, obj);
+	
 		}
 		
 		return objects;
 
 	}
 	
-	public byte[] getBSON(Object obj) {
-		BSONEncoder encoder = new BasicBSONEncoder();
-		DBObject dbobj = classConverter.encode(obj);
-		return encoder.encode(dbobj);
-	}
-	
 	<T> T convertObject(DBObject dbobj, Class<T> clazz) {
-		Object get = objectIds.get(dbobj.get("_id"));
+		
+		if(dbobj == null)
+			return null;
+		
+		Object get = objectIds.get((ObjectId)dbobj.get("_id"));
 		if(get != null && (get.getClass() == clazz)) {
 			return (T)get;
 		}
+		
 		return classConverter.decode(dbobj, clazz);
 	}
 	
@@ -239,12 +254,13 @@ public class Storage {
 		 * @return The collection name to store objects of that class.
 		 */
 		String getCollectionForClass(Class<?> clazz);
+		
 	}
 	
 	/**
 	 * This is the default {@link CollectionResolver}, that should be used.
 	 */
-	class CanonicalNameResolver implements CollectionResolver {
+	private class CanonicalNameResolver implements CollectionResolver {
 
 		/**
 		 * {@inheritDoc}
@@ -258,7 +274,7 @@ public class Storage {
 	
 	/**
 	 * Holds information about a specific MongoDB storage. Can be used to 
-	 * get an instance of the storage, for the specific MongoDB.
+	 * onGet an instance of the storage, for the specific MongoDB.
 	 * 
 	 * @see Storage#getInstance(de.inovex.jmorm.Storage.StorageInfo) 
 	 */
@@ -317,6 +333,125 @@ public class Storage {
 			return dbName;
 		}
 				
+	}
+	
+	/**
+	 * A DBHandler interface can be used to intercept connection to MongoDB.
+	 * An implementation of this interface need to do all the database writing
+	 * and reading. This mapper has a default implementation ({@link MongoDBHandler})
+	 * of this interface, that is used for the connection with a MongoDB.
+	 * 
+	 * Under normal circumstances you won't need to overwrite this class, only
+	 * if you want to intercept or modify into the writing in reading process.
+	 * Use {@link Storage#getInstance(de.inovex.jmom.Storage.DBHandler)} to onGet
+	 * a {@link Storage} for a specific {@code DBHandler}.
+	 */
+	public static interface DBHandler {
+		
+		/**
+		 * This method is called, whenever an {@link DBObject} should be stored
+		 * into database. The implementation of this method should store the 
+		 * object into database. If the {@code DBObject} has an {@code _id} field,
+		 * the value isn't allowed to be changed by that method. If it hasn't such
+		 * a field, this method must make sure, the {@code DBObject} contains a
+		 * {@code _if} field after this methods ends, with a valid {@link ObjectId}.
+		 * 
+		 * @param collection The name of the collection to save that object too.
+		 * @param dbobj The object to store to database.
+		 */
+		void onSave(String collection, DBObject dbobj);
+		
+		DBObject onGetOne(String collection);
+		
+		Collection<DBObject> onGet(String collection);
+		
+		/**
+		 * This method is called, whenever a {@link DBRef} to another object needs to 
+		 * be created. The returning reference must point to the given {@link DBObject}
+		 * in the collection with the given name.
+		 * 
+		 * @param collection The name of the collection the referenced object is in.
+		 * @param refTo The object to create a reference for.
+		 * @return A reference to that object.
+		 */
+		DBRef onCreateRef(String collection, DBObject refTo);
+		
+		DBObject onFetchRef(DBRef ref);
+		
+	}
+	
+	private static class MongoDBHandler implements DBHandler {
+
+		private DB db;
+		
+		public MongoDBHandler(DB db) {
+			this.db = db;
+		}
+		
+		@Override
+		public void onSave(String collection, DBObject dbobj) {
+			db.getCollection(collection).save(dbobj);
+		}
+
+		@Override
+		public DBObject onGetOne(String collection) {
+			DBCollection col = db.getCollection(collection);
+			return col.findOne();
+		}
+
+		@Override
+		public Collection<DBObject> onGet(String collection) {
+			
+			Collection<DBObject> objects = new ArrayList<DBObject>();
+			
+			DBCursor cur = null;
+			try {
+				cur = db.getCollection(collection).find();
+			
+				for(DBObject dbobj : cur) {
+					objects.add(dbobj);
+				}
+			} finally {
+				if(cur != null)
+					cur.close();
+			}
+			
+			return objects;
+			
+		}
+		
+		@Override
+		public DBRef onCreateRef(String collection, DBObject refTo) {
+			return new DBRef(db, collection, refTo.get("_id"));
+		}
+
+		@Override
+		public DBObject onFetchRef(DBRef ref) {
+			return ref.fetch();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final MongoDBHandler other = (MongoDBHandler) obj;
+			if (this.db != other.db && (this.db == null || !this.db.equals(other.db))) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = 5;
+			hash = 79 * hash + (this.db != null ? this.db.hashCode() : 0);
+			return hash;
+		}
+		
 	}
 	
 }

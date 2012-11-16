@@ -89,7 +89,7 @@ class ObjectConverter implements Converter {
 		} else {
 			if(dbval instanceof DBRef) {
 				// Dereference database object and convert it to field type
-				obj = storage.convertObject(((DBRef)dbval).fetch(), objectType);
+				obj = storage.convertObject(storage.fetchRef((DBRef)dbval), objectType);
 			} else {
 				obj = dbval;
 			}

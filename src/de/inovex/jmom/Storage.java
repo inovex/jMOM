@@ -15,20 +15,10 @@
  */
 package de.inovex.jmom;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
-import com.mongodb.Mongo;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import org.bson.types.ObjectId;
 
@@ -187,7 +177,7 @@ public class Storage {
 	
 	public <T> T findOne(Class<T> clazz) {
 		
-		DBObject dbobj = dbhandler.onGetOne(collectionResolver.getCollectionForClass(clazz));
+		DBObject dbobj = dbhandler.onGetFirst(collectionResolver.getCollectionForClass(clazz));
 		//DBCollection col = db.getCollection(collectionResolver.getCollectionForClass(clazz));
 		//DBObject dbobj = col.findOne();
 		ObjectId id = (ObjectId)dbobj.get("_id");
@@ -361,8 +351,21 @@ public class Storage {
 		 */
 		void onSave(String collection, DBObject dbobj);
 		
-		DBObject onGetOne(String collection);
+		/**
+		 * This method must return the first object from the given collection.
+		 * 
+		 * @param collection The name of the collection to get the object from.
+		 * @return The first {@link DBObject} of the given collection.
+		 */
+		DBObject onGetFirst(String collection);
 		
+		/**
+		 * This method must return a collection of {@link DBObject DBObjects} from
+		 * the given collection.
+		 * 
+		 * @param collection The collection to catch all objects from.
+		 * @return A collection of all {@link DBObject} from this collection.
+		 */
 		Collection<DBObject> onGet(String collection);
 		
 		/**
@@ -376,10 +379,23 @@ public class Storage {
 		 */
 		DBRef onCreateRef(String collection, DBObject refTo);
 		
+		/**
+		 * This method is called, whenever the mapper tries to fetch the object
+		 * a {@link DBRef} is referencing to. The implementation must fetch
+		 * this object and return it.
+		 * 
+		 * @param ref A reference to another object.
+		 * @return The object, that was referenced.
+		 */
 		DBObject onFetchRef(DBRef ref);
 		
 	}
 	
+	/**
+	 * The default implementation of the {@link DBHandler} interface, that does
+	 * all the action on a {@link DB}. This will be used when the user creates
+	 * a storage and don't pass an own implementation of {@code DBHandler} to it.
+	 */
 	private static class MongoDBHandler implements DBHandler {
 
 		private DB db;
@@ -394,7 +410,7 @@ public class Storage {
 		}
 
 		@Override
-		public DBObject onGetOne(String collection) {
+		public DBObject onGetFirst(String collection) {
 			DBCollection col = db.getCollection(collection);
 			return col.findOne();
 		}

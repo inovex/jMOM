@@ -97,7 +97,8 @@ public class Storage {
 	private CollectionResolver collectionResolver = new CanonicalNameResolver();
 	
 	private ClassConverter classConverter = new ClassConverter(this);
-	private HashMap<ObjectId, Object> objectIds = new HashMap<ObjectId, Object>();
+	
+	private Cache cache = new Cache();
 
 	private Storage(DBHandler dbhandler) {
 		this.dbhandler = dbhandler;
@@ -133,19 +134,26 @@ public class Storage {
 		saveObject(obj);		
 	}
 	
+	public void delete(Object obj) {
+		ObjectId id = cache.getId(obj);
+		if(id != null) {
+			dbhandler.onDelete(collectionResolver.getCollectionForClass(obj.getClass()), id);
+		}
+	}
+	
 	DBObject saveObject(Object obj) {
 		
 		DBObject dbobj = classConverter.encode(obj);
-		ObjectId id = getId(obj);
+		ObjectId id = cache.getId(obj);
 		if(id != null) {
 			dbobj.put("_id", id);
 		}
 		
 		dbhandler.onSave(collectionResolver.getCollectionForClass(obj.getClass()), dbobj);
-		//db.getCollection(collectionResolver.getCollectionForClass(obj.getClass())).onSave(dbobj);
+		
 		if(id == null) {
 			id = (ObjectId)dbobj.get("_id");
-			objectIds.put(id, obj);
+			cache.put(id, obj);
 		}
 		
 		return dbobj;
@@ -153,7 +161,6 @@ public class Storage {
 	
 	DBObject saveDBObject(DBObject dbobj, String collection) {
 		
-		//db.getCollection(collection).onSave(dbobj);
 		dbhandler.onSave(collection, dbobj);
 		return dbobj;
 	}
@@ -165,24 +172,15 @@ public class Storage {
 	DBObject fetchRef(DBRef dbref) {
 		return dbhandler.onFetchRef(dbref);
 	}
-	
-	private ObjectId getId(Object obj) {
-		for(Entry<ObjectId, Object> entry : objectIds.entrySet()) {
-			if(entry.getValue() == obj) {
-				return entry.getKey();
-			}
-		}
-		return null;
-	}
-	
+		
 	public <T> T findOne(Class<T> clazz) {
 		
 		DBObject dbobj = dbhandler.onGetFirst(collectionResolver.getCollectionForClass(clazz));
-		//DBCollection col = db.getCollection(collectionResolver.getCollectionForClass(clazz));
-		//DBObject dbobj = col.findOne();
+		if(dbobj == null)
+			return null;
 		ObjectId id = (ObjectId)dbobj.get("_id");
 		T obj = classConverter.decode(dbobj, clazz);
-		objectIds.put(id, obj);
+		cache.put(id, obj);
 		return obj;
 		
 	}
@@ -198,7 +196,7 @@ public class Storage {
 			ObjectId id = (ObjectId)dbobj.get("_id");
 			T obj = classConverter.decode(dbobj, clazz);
 			objects.add(obj);
-			objectIds.put(id, obj);
+			cache.put(id, obj);
 	
 		}
 		
@@ -211,13 +209,36 @@ public class Storage {
 		if(dbobj == null)
 			return null;
 		
-		Object get = objectIds.get((ObjectId)dbobj.get("_id"));
+		Object get = cache.getObject((ObjectId)dbobj.get("_id"));
 		if(get != null && (get.getClass() == clazz)) {
 			return (T)get;
 		}
 		
 		return classConverter.decode(dbobj, clazz);
 	}
+	
+	private class Cache {
+		
+		private HashMap<ObjectId, Object> objectIds = new HashMap<ObjectId, Object>();
+		
+		Object getObject(ObjectId id) {
+			return objectIds.get(id);
+		}
+		
+		ObjectId getId(Object obj) {
+			for(Entry<ObjectId, Object> entry : objectIds.entrySet()) {
+				if(entry.getValue() == obj) {
+					return entry.getKey();
+				}
+			}
+			return null;
+		}
+		
+		void put(ObjectId id, Object obj) {
+			objectIds.put(id, obj);
+		}
+		
+	}	
 	
 	/**
 	 * Changes the {@link CollectionResolver} that is used to look up the collection
@@ -389,6 +410,15 @@ public class Storage {
 		 */
 		DBObject onFetchRef(DBRef ref);
 		
+		/**
+		 * This method is called, whenever an object should be deleted from
+		 * database. The object is identified by its collection and its {@link ObjectId}.
+		 * 
+		 * @param collection The name of the collection.
+		 * @param id The {@link ObjectId} of the object.
+		 */
+		void onDelete(String collection, ObjectId id);
+		
 	}
 	
 	/**
@@ -445,6 +475,11 @@ public class Storage {
 		public DBObject onFetchRef(DBRef ref) {
 			return ref.fetch();
 		}
+
+		@Override
+		public void onDelete(String collection, ObjectId id) {
+			db.getCollection(collection).remove(new BasicDBObject("_id", id));
+		}	
 
 		@Override
 		public boolean equals(Object obj) {

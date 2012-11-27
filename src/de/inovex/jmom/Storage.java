@@ -16,10 +16,10 @@
 package de.inovex.jmom;
 
 import com.mongodb.*;
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.Map.Entry;
 import org.bson.types.ObjectId;
 
 /**
@@ -217,25 +217,70 @@ public class Storage {
 		return classConverter.decode(dbobj, clazz);
 	}
 	
+	/**
+	 * Since the mapper cannot add an {@code _id} field to an object, once it is
+	 * saved, it need to store a mapping between {@link ObjectId ObjectIds} and
+	 * {@link Object Objects}. This cache handles this mapping.
+	 */
 	private class Cache {
 		
-		private HashMap<ObjectId, Object> objectIds = new HashMap<ObjectId, Object>();
+		/**
+		 * This stores the ObjectId of each Object. It uses a WeakHashMap, so
+		 * the entry will be deleted, whenever the object isn't used anymore.
+		 */
+		private WeakHashMap<Object, ObjectId> objectIds = new WeakHashMap<Object, ObjectId>();
 		
+		/**
+		 * This stores the last object in memory, that was created for a specific 
+		 * ObjectId. This is needed to be stored, to have a unique ObjectId to 
+		 * Object mapping, even when the user holds several objects with the same
+		 * ObjectId in memory. This stores only a WeakReference to the object,
+		 * so that this map isn't preventing the object to be cleared by the
+		 * GC, if the user doesn't use it anymore.
+		 */
+		private HashMap<ObjectId, WeakReference<Object>> lastObject 
+				= new HashMap<ObjectId, WeakReference<Object>>();
+		
+		/**
+		 * Get the {@link Object} for a specific {@link ObjectId}. This will 
+		 * return either the last {@code Object}, that has been created for
+		 * that {@code ObjectId} or {@code null}, if that object already isn't used
+		 * anymore and has been cleared by the GC.
+		 * 
+		 * @param id The {@link ObjectId} of the object.
+		 * @return The {@link Object} for the given {@code ObjectId} or {@code null}.
+		 */
 		Object getObject(ObjectId id) {
-			return objectIds.get(id);
-		}
-		
-		ObjectId getId(Object obj) {
-			for(Entry<ObjectId, Object> entry : objectIds.entrySet()) {
-				if(entry.getValue() == obj) {
-					return entry.getKey();
-				}
+			Object obj = lastObject.get(id).get();
+			if(obj == null) {
+				lastObject.remove(id);
 			}
-			return null;
+			return obj;
 		}
 		
-		void put(ObjectId id, Object obj) {
-			objectIds.put(id, obj);
+		/**
+		 * Get the {@link ObjectId} of a given {@link Object}. This will return
+		 * either the object's id or {@code null}, if the object has no 
+		 * {@code ObjectId}, because it hasn't been stored to database yet.
+		 *
+		 * @param obj The {@link Object} to get the {@link ObjectId id} for.
+		 * @return The {@link ObjectId} of the given object or {@code null}.
+		 */
+		ObjectId getId(Object obj) {
+			return objectIds.get(obj);
+		}
+		
+		/**
+		 * Stores a new {@link Object} and its {@link ObjectId} in the cache.
+		 * That object will now be returned querying for its {@link ObjectId}
+		 * until a new object will be put to database.
+		 * 
+		 * @param id The id of the object.
+		 * @param obj The object itself. 
+		 */
+		void put(ObjectId id, Object obj) {	
+			objectIds.put(obj, id);
+			lastObject.put(id, new WeakReference<Object>(obj));		
 		}
 		
 	}	

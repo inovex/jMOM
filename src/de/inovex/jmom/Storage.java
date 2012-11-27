@@ -30,6 +30,8 @@ public class Storage {
 
 	private static Map<DBHandler, Storage> storages = new HashMap<DBHandler, Storage>();
 	
+	private static final String ID_FIELD = "_id";
+	
 	/**
 	 * Get a storage instance with a given {@link DBHandler}.
 	 * 
@@ -146,13 +148,13 @@ public class Storage {
 		DBObject dbobj = classConverter.encode(obj);
 		ObjectId id = cache.getId(obj);
 		if(id != null) {
-			dbobj.put("_id", id);
+			dbobj.put(ID_FIELD, id);
 		}
 		
 		dbhandler.onSave(collectionResolver.getCollectionForClass(obj.getClass()), dbobj);
 		
 		if(id == null) {
-			id = (ObjectId)dbobj.get("_id");
+			id = (ObjectId)dbobj.get(ID_FIELD);
 			cache.put(id, obj);
 		}
 		
@@ -178,7 +180,7 @@ public class Storage {
 		DBObject dbobj = dbhandler.onGetFirst(collectionResolver.getCollectionForClass(clazz));
 		if(dbobj == null)
 			return null;
-		ObjectId id = (ObjectId)dbobj.get("_id");
+		ObjectId id = (ObjectId)dbobj.get(ID_FIELD);
 		T obj = classConverter.decode(dbobj, clazz);
 		cache.put(id, obj);
 		return obj;
@@ -193,7 +195,7 @@ public class Storage {
 				
 		for(DBObject dbobj : dbobjects) {
 
-			ObjectId id = (ObjectId)dbobj.get("_id");
+			ObjectId id = (ObjectId)dbobj.get(ID_FIELD);
 			T obj = classConverter.decode(dbobj, clazz);
 			objects.add(obj);
 			cache.put(id, obj);
@@ -209,7 +211,7 @@ public class Storage {
 		if(dbobj == null)
 			return null;
 		
-		Object get = cache.getObject((ObjectId)dbobj.get("_id"));
+		Object get = cache.getObject((ObjectId)dbobj.get(ID_FIELD));
 		if(get != null && (get.getClass() == clazz)) {
 			return (T)get;
 		}
@@ -513,7 +515,7 @@ public class Storage {
 		
 		@Override
 		public DBRef onCreateRef(String collection, DBObject refTo) {
-			return new DBRef(db, collection, refTo.get("_id"));
+			return new DBRef(db, collection, refTo.get(ID_FIELD));
 		}
 
 		@Override
@@ -523,7 +525,7 @@ public class Storage {
 
 		@Override
 		public void onDelete(String collection, ObjectId id) {
-			db.getCollection(collection).remove(new BasicDBObject("_id", id));
+			db.getCollection(collection).remove(new BasicDBObject(ID_FIELD, id));
 		}	
 
 		@Override

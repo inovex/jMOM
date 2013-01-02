@@ -50,7 +50,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -66,7 +66,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -82,7 +82,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -98,7 +98,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -114,7 +114,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -130,7 +130,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -146,7 +146,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -162,7 +162,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -178,7 +178,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -195,7 +195,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertSame(readCtc.getReferenceList().get(0), readCtc.getReferenceList().get(1));
 			
 	}
@@ -211,7 +211,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -227,7 +227,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -243,7 +243,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -259,7 +259,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -275,7 +275,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -291,7 +291,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -307,7 +307,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -323,7 +323,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}
@@ -340,7 +340,7 @@ public class StorageCollectionTest extends AbstractStorageTest {
 		
 		storage.save(ctc);
 		
-		CollectionTestClass readCtc = storage.findOne(CollectionTestClass.class);
+		CollectionTestClass readCtc = storage.findFirst(CollectionTestClass.class);
 		assertEquals(ctc, readCtc);
 		
 	}

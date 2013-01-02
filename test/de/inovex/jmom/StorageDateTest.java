@@ -39,7 +39,7 @@ public class StorageDateTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, PseudoPrimitiveTestClass.class.getCanonicalName());
 	
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		Date newDate = res.getDateVal();
 		// Both dates should be equal, if they are within 1 second to each other,
 		// since the tostring method won't write the milliseconds, so the object 

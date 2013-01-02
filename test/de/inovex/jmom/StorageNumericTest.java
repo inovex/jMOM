@@ -37,7 +37,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("byte field doesn't match.", Byte.MIN_VALUE, res.getByteVal());
 		assertEquals("Byte field doesn't match.", Byte.MIN_VALUE, (Object)res.getByteClassVal());
 		
@@ -53,7 +53,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("byte field doesn't match.", Byte.MAX_VALUE, res.getByteVal());
 		assertEquals("Byte field doesn't match.", Byte.MAX_VALUE, (Object)res.getByteClassVal());
 		
@@ -69,7 +69,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("byte field doesn't match.", (byte)0, res.getByteVal());
 		assertEquals("Byte field doesn't match.", (byte)0, (Object)res.getByteClassVal());
 		
@@ -85,7 +85,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("short field doesn't match.", Short.MIN_VALUE, res.getShortVal());
 		assertEquals("Short field doesn't match.", Short.MIN_VALUE, (Object)res.getShortClassVal());
 		
@@ -101,7 +101,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("short field doesn't match.", Short.MAX_VALUE, res.getShortVal());
 		assertEquals("Short field doesn't match.", Short.MAX_VALUE, (Object)res.getShortClassVal());
 		
@@ -117,7 +117,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("short field doesn't match.", (short)0, res.getShortVal());
 		assertEquals("Short field doesn't match.", (short)0, (Object)res.getShortClassVal());
 		
@@ -133,7 +133,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("int field doesn't match.", Integer.MIN_VALUE, res.getIntVal());
 		assertEquals("Int field doesn't match.", Integer.MIN_VALUE, (Object)res.getIntClassVal());
 		
@@ -149,7 +149,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("int field doesn't match.", Integer.MAX_VALUE, res.getIntVal());
 		assertEquals("Int field doesn't match.", Integer.MAX_VALUE, (Object)res.getIntClassVal());
 		
@@ -165,7 +165,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("int field doesn't match.", 0, res.getIntVal());
 		assertEquals("Int field doesn't match.", 0, (Object)res.getIntClassVal());
 		
@@ -181,7 +181,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("long field doesn't match.", Long.MIN_VALUE, res.getLongVal());
 		assertEquals("Long field doesn't match.", Long.MIN_VALUE, (Object)res.getLongClassVal());
 		
@@ -197,7 +197,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("long field doesn't match.", Long.MAX_VALUE, res.getLongVal());
 		assertEquals("Long field doesn't match.", Long.MAX_VALUE, (Object)res.getLongClassVal());
 		
@@ -213,7 +213,7 @@ public class StorageNumericTest extends AbstractStorageTest {
 		
 		storage.save(obj);
 		
-		PseudoPrimitiveTestClass res = storage.findOne(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
 		assertEquals("long field doesn't match.", (long)0, res.getLongVal());
 		assertEquals("Long field doesn't match.", (long)0, (Object)res.getLongClassVal());
 		

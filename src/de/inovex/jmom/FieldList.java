@@ -26,11 +26,11 @@ import java.util.Map;
  *
  * @author Tim Roes <tim.roes@inovex.de>
  */
-class FieldList implements Iterable<Field> {
+public class FieldList implements Iterable<Field> {
 	
 	private static Map<Class<?>, FieldList> cachedFieldLists = new HashMap<Class<?>, FieldList>();
 	
-	public static FieldList valueOf(Class<?> clazz) {
+	static FieldList valueOf(Class<?> clazz) {
 		FieldList fl = cachedFieldLists.get(clazz);
 		if(fl == null) {
 			fl = new FieldList(clazz);

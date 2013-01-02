@@ -175,9 +175,10 @@ public class Storage {
 		return dbhandler.onFetchRef(dbref);
 	}
 		
-	public <T> T findOne(Class<T> clazz) {
+	public <T> T findFirst(Class<T> clazz) {
 		
-		DBObject dbobj = dbhandler.onGetFirst(collectionResolver.getCollectionForClass(clazz));
+		DBObject dbobj = dbhandler.onGetFirst(collectionResolver.getCollectionForClass(clazz),
+				FieldList.valueOf(clazz));
 		if(dbobj == null)
 			return null;
 		ObjectId id = (ObjectId)dbobj.get(ID_FIELD);
@@ -191,7 +192,8 @@ public class Storage {
 		
 		List<T> objects = new ArrayList<T>();
 		
-		Collection<DBObject> dbobjects = dbhandler.onGet(collectionResolver.getCollectionForClass(clazz));
+		Collection<DBObject> dbobjects = dbhandler.onGet(collectionResolver.getCollectionForClass(clazz),
+				FieldList.valueOf(clazz));
 				
 		for(DBObject dbobj : dbobjects) {
 
@@ -253,7 +255,9 @@ public class Storage {
 		 * @return The {@link Object} for the given {@code ObjectId} or {@code null}.
 		 */
 		Object getObject(ObjectId id) {
-			Object obj = lastObject.get(id).get();
+			WeakReference<Object> ref = lastObject.get(id);
+			if(ref == null) return null;
+			Object obj = ref.get(); 
 			if(obj == null) {
 				lastObject.remove(id);
 			}
@@ -425,7 +429,7 @@ public class Storage {
 		 * @param collection The name of the collection to get the object from.
 		 * @return The first {@link DBObject} of the given collection.
 		 */
-		DBObject onGetFirst(String collection);
+		DBObject onGetFirst(String collection, FieldList fieldList);
 		
 		/**
 		 * This method must return a collection of {@link DBObject DBObjects} from
@@ -434,7 +438,7 @@ public class Storage {
 		 * @param collection The collection to catch all objects from.
 		 * @return A collection of all {@link DBObject} from this collection.
 		 */
-		Collection<DBObject> onGet(String collection);
+		Collection<DBObject> onGet(String collection, FieldList fieldList);
 		
 		/**
 		 * This method is called, whenever a {@link DBRef} to another object needs to 
@@ -487,13 +491,13 @@ public class Storage {
 		}
 
 		@Override
-		public DBObject onGetFirst(String collection) {
+		public DBObject onGetFirst(String collection, FieldList fieldList) {
 			DBCollection col = db.getCollection(collection);
 			return col.findOne();
 		}
 
 		@Override
-		public Collection<DBObject> onGet(String collection) {
+		public Collection<DBObject> onGet(String collection, FieldList fieldlist) {
 			
 			Collection<DBObject> objects = new ArrayList<DBObject>();
 			

@@ -37,7 +37,7 @@ public class StorageToStringTest extends AbstractStorageTest {
 		dbobj.put("stringVal", value);
 		storage.saveDBObject(dbobj, PseudoPrimitiveTestClass.class.getCanonicalName());
 		
-		return storage.findOne(PseudoPrimitiveTestClass.class);
+		return storage.findFirst(PseudoPrimitiveTestClass.class);
 		
 	}
 	

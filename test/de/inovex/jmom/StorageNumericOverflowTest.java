@@ -53,7 +53,7 @@ public class StorageNumericOverflowTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, PseudoPrimitiveTestClass.class.getCanonicalName());
 	
-		return storage.findOne(PseudoPrimitiveTestClass.class);
+		return storage.findFirst(PseudoPrimitiveTestClass.class);
 		
 	}
 

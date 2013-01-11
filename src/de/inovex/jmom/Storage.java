@@ -20,6 +20,8 @@ import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bson.types.ObjectId;
 
 /**
@@ -136,6 +138,12 @@ public class Storage {
 		saveObject(obj);		
 	}
 	
+	public void saveMultiple(Iterable<Object> objects) {
+		for(Object o : objects) {
+			saveObject(o);
+		}
+	}
+	
 	public void delete(Object obj) {
 		ObjectId id = cache.getId(obj);
 		if(id != null) {
@@ -194,14 +202,37 @@ public class Storage {
 		
 		Collection<DBObject> dbobjects = dbhandler.onGet(collectionResolver.getCollectionForClass(clazz),
 				FieldList.valueOf(clazz));
+		
+		List<DecodeThread<T>> threads = new LinkedList<DecodeThread<T>>();
 				
 		for(DBObject dbobj : dbobjects) {
-
-			ObjectId id = (ObjectId)dbobj.get(ID_FIELD);
-			T obj = classConverter.decode(dbobj, clazz);
-			objects.add(obj);
-			cache.put(id, obj);
-	
+			
+			DecodeThread<T> t = new DecodeThread<T>(dbobj, clazz);
+			
+			// If multithreading is enabled, start in new thread.
+			if(config.getMultithreadingEnabled()) {
+				t.start();
+			} else {
+				t.run();
+			}
+			
+			// Add thread to list
+			threads.add(t);
+			
+		}
+		
+		// Wait for every thread in list to finish and add its result to the object list.
+		for(DecodeThread<T> t : threads) {
+			
+			try {
+				t.join();
+				T obj = t.getResult();
+				objects.add(obj);
+				cache.put(t.getObjectId(), obj);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(Storage.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			
 		}
 		
 		return objects;
@@ -553,6 +584,35 @@ public class Storage {
 			hash = 79 * hash + (this.db != null ? this.db.hashCode() : 0);
 			return hash;
 		}
+		
+	}
+	
+	private class DecodeThread<T> extends Thread {
+		
+		private DBObject dbo;
+		private Class<T> clazz;
+		private ObjectId id;
+		private T result;
+		
+		public DecodeThread(DBObject dbo, Class<T> clazz) {
+			this.dbo = dbo;
+			this.clazz = clazz;
+			this.id = (ObjectId)dbo.get(ID_FIELD);
+		}
+
+		@Override
+		public synchronized void run() {
+			result = classConverter.decode(dbo, clazz);
+		}
+		
+		public synchronized T getResult() {
+			return result;
+		}
+		
+		public ObjectId getObjectId() {
+			return id;
+		}
+		
 		
 	}
 	

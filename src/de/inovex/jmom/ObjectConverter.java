@@ -43,6 +43,10 @@ class ObjectConverter implements Converter {
 		primitiveConverter = new PrimitiveConverter(storage);
 	}
 	
+	public Config getConfig() {
+		return storage.getConfig();
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

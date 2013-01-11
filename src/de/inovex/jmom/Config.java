@@ -34,6 +34,8 @@ public class Config {
 	
 	private CharacterBehavior characterBehavior = CharacterBehavior.EXCEPTION;
 	
+	private boolean multithreading;
+	
 	/**
 	 * The {@link NumericBehavior} of the Storage sets the behavior, that should
 	 * be done, when the value in the numeric value in the database is too large
@@ -52,6 +54,10 @@ public class Config {
 	public CharacterBehavior getCharacterBehavior() {
 		return characterBehavior;
 	}
+	
+	public boolean getMultithreadingEnabled() {
+		return multithreading;
+	}
 
 	public void setCharacterBehavior(CharacterBehavior characterBehavior) {
 		this.characterBehavior = characterBehavior;
@@ -59,6 +65,10 @@ public class Config {
 
 	public void setNumericBehavior(NumericBehavior numericBehavior) {
 		this.numericBehavior = numericBehavior;
+	}
+	
+	public void setMultithreadingEnabled(boolean multithreading) {
+		this.multithreading = multithreading;
 	}
 	
 }

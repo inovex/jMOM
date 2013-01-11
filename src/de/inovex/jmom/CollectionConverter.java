@@ -25,11 +25,14 @@ import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The {@code CollectionConverter} is responsible for transforming {@link Collection Collections}
@@ -54,7 +57,7 @@ class CollectionConverter implements Converter {
 		if(!Collection.class.isAssignableFrom(objectType))
 			return null;
 		
-		Class<?> componentType = ReflectionUtil.getCollectionType(field.getGenericType());
+		final Class<?> componentType = ReflectionUtil.getCollectionType(field.getGenericType());
 		
 		if(componentType == null) {
 			throw new DeserializationException("Cannot handle raw collection types. Use generics instead.");
@@ -69,6 +72,7 @@ class CollectionConverter implements Converter {
 		}
 		
 		Iterable<?> dblist = (Iterable<?>)dbval;
+		
 		Collection list = null;
 			
 		try {
@@ -87,21 +91,33 @@ class CollectionConverter implements Converter {
 			} else {
 				list = (Collection<?>)instType.newInstance();
 			}
+		
+			List<FetchThread> childThreads = new LinkedList<FetchThread>();
 
-
-			for(Object ob : dblist) {
-
-				ob = objectConverter.decode(ob, componentType, null);
-
-				// Do a typecheck on the object to the type of the collection,
-				// if a collection type existed (no raw collection was used).
-				if(!ReflectionUtil.getBoxedType(componentType).isAssignableFrom(ob.getClass())) {
-					return null;
+			for(final Object ob : dblist) {
+				
+				FetchThread t = new FetchThread(ob, componentType);
+				
+				if(objectConverter.getConfig().getMultithreadingEnabled()) {
+					t.start();
+				} else {
+					t.run();
 				}
-
-				list.add(ob);
+				
+				childThreads.add(t);
+				
 			}
-
+			
+			list.clear();
+			for(FetchThread t : childThreads) {
+					try {
+						t.join();
+						list.add(t.getResult());
+					} catch (InterruptedException ex) {
+						Logger.getLogger(CollectionConverter.class.getName()).log(Level.SEVERE, null, ex);
+					}
+			}
+			
 			return list;
 
 		} catch(InstantiationException ex) {
@@ -175,6 +191,36 @@ class CollectionConverter implements Converter {
 				+ "collection type for field type %s found. Use the @UseType(Class<?>) "
 				+ "annotation, to chose a specific instatntiation type.", clazz.getName()));
 		
+	}
+	
+	private class FetchThread extends Thread {
+		
+		private Object ob;
+		private Class<?> componentType;
+		private Object result;
+		
+		public FetchThread(Object ob, Class<?> componentType) {
+			this.ob = ob;
+			this.componentType = componentType;
+		}
+		
+		@Override
+		public synchronized void run() {
+			
+			Object decObj = objectConverter.decode(ob, componentType, null);
+
+			// Do a typecheck on the object to the type of the collection,
+			// if a collection type existed (no raw collection was used).
+			if(ReflectionUtil.getBoxedType(componentType).isAssignableFrom(decObj.getClass())) {
+				result = decObj;
+			}
+			
+		}
+		
+		public synchronized Object getResult() {
+			return result;
+		}
+
 	}
 	
 }

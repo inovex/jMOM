@@ -15,7 +15,6 @@
  */
 package de.inovex.jmom.util;
 
-import de.inovex.jmom.util.DateUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import org.junit.Before;

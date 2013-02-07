@@ -102,7 +102,7 @@ public class Storage {
 	
 	private ClassConverter classConverter = new ClassConverter(this);
 	
-	private Cache cache = new Cache();
+	private Cache cache = new DefaultCache();
 
 	private Storage(DBHandler dbhandler) {
 		this.dbhandler = dbhandler;
@@ -127,6 +127,29 @@ public class Storage {
 	 */
 	public void setConfig(Config config) {
 		this.config = config;
+	}
+	
+	/**
+	 * Sets a cache to be used by that storage to store the links between {@link Object Objects}
+	 * and {@link ObjectId ObjectIds} from the database. For proper function this method must
+	 * be called before any action (saving/deleting/...) is done with the {@link Storage}.
+	 * If it's called afterwards the behavior is undefined. If this method is never called, the
+	 * {@link DefaultCache} will be used. Under normal circumstances you don't need to change the
+	 * {@code Cache}.
+	 * 
+	 * @param cache The new {@code Cache} to use for this {@code Storage}.
+	 */
+	public void setCache(Cache cache) {
+		this.cache = cache;
+	}
+	
+	/**
+	 * Returns the cache, used by this {@link Storage} to map between {@link ObjectId} and {@link Object}.
+	 * 
+	 * @return The currently used {@code Cache}.
+	 */
+	public Cache getCache() {
+		return this.cache;
 	}
 	
 	/**
@@ -252,12 +275,47 @@ public class Storage {
 		return classConverter.decode(dbobj, clazz);
 	}
 	
+	public static interface Cache {
+		
+		/**
+		 * Gets the {@link Object} for a specific {@link ObjectId}. This will 
+		 * return either the last {@code Object}, that has been created for
+		 * that {@code ObjectId} or {@code null}, if that object already isn't used
+		 * anymore and has been cleared by the GC.
+		 * 
+		 * @param id The {@link ObjectId} of the object.
+		 * @return The {@link Object} for the given {@code ObjectId} or {@code null}.
+		 */
+		public Object getObject(ObjectId id);
+		
+		/**
+		 * Gets the {@link ObjectId} of a given {@link Object}. This will return
+		 * either the object's id or {@code null}, if the object has no 
+		 * {@code ObjectId}, because it hasn't been stored to database yet.
+		 *
+		 * @param obj The {@link Object} to get the {@link ObjectId id} for.
+		 * @return The {@link ObjectId} of the given object or {@code null}.
+		 */
+		public ObjectId getId(Object object);
+		
+		/**
+		 * Stores a new {@link Object} and its {@link ObjectId} in the cache.
+		 * That object will now be returned querying for its {@link ObjectId}
+		 * until a new object will be put to database.
+		 * 
+		 * @param id The id of the object.
+		 * @param obj The object itself. 
+		 */
+		public void put(ObjectId id, Object object);
+		
+	}
+	
 	/**
 	 * Since the mapper cannot add an {@code _id} field to an object, once it is
 	 * saved, it need to store a mapping between {@link ObjectId ObjectIds} and
 	 * {@link Object Objects}. This cache handles this mapping.
 	 */
-	private class Cache {
+	public class DefaultCache implements Cache {
 		
 		/**
 		 * This stores the ObjectId of each Object. It uses a WeakHashMap, so
@@ -277,15 +335,10 @@ public class Storage {
 				= new HashMap<ObjectId, WeakReference<Object>>();
 		
 		/**
-		 * Get the {@link Object} for a specific {@link ObjectId}. This will 
-		 * return either the last {@code Object}, that has been created for
-		 * that {@code ObjectId} or {@code null}, if that object already isn't used
-		 * anymore and has been cleared by the GC.
-		 * 
-		 * @param id The {@link ObjectId} of the object.
-		 * @return The {@link Object} for the given {@code ObjectId} or {@code null}.
+		 * {@inheritDoc}
 		 */
-		Object getObject(ObjectId id) {
+		@Override
+		public Object getObject(ObjectId id) {
 			WeakReference<Object> ref = lastObject.get(id);
 			if(ref == null) return null;
 			Object obj = ref.get(); 
@@ -295,27 +348,20 @@ public class Storage {
 			return obj;
 		}
 		
-		/**
-		 * Get the {@link ObjectId} of a given {@link Object}. This will return
-		 * either the object's id or {@code null}, if the object has no 
-		 * {@code ObjectId}, because it hasn't been stored to database yet.
-		 *
-		 * @param obj The {@link Object} to get the {@link ObjectId id} for.
-		 * @return The {@link ObjectId} of the given object or {@code null}.
-		 */
-		ObjectId getId(Object obj) {
-			return objectIds.get(obj);
-		}
 		
 		/**
-		 * Stores a new {@link Object} and its {@link ObjectId} in the cache.
-		 * That object will now be returned querying for its {@link ObjectId}
-		 * until a new object will be put to database.
-		 * 
-		 * @param id The id of the object.
-		 * @param obj The object itself. 
+		 * {@inheritDoc}
 		 */
-		void put(ObjectId id, Object obj) {	
+		@Override
+		public ObjectId getId(Object obj) {
+			return objectIds.get(obj);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void put(ObjectId id, Object obj) {	
 			objectIds.put(obj, id);
 			lastObject.put(id, new WeakReference<Object>(obj));		
 		}

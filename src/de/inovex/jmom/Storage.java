@@ -315,7 +315,7 @@ public class Storage {
 	 * saved, it need to store a mapping between {@link ObjectId ObjectIds} and
 	 * {@link Object Objects}. This cache handles this mapping.
 	 */
-	public class DefaultCache implements Cache {
+	public static class DefaultCache implements Cache {
 		
 		/**
 		 * This stores the ObjectId of each Object. It uses a WeakHashMap, so

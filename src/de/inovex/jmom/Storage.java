@@ -205,19 +205,6 @@ public class Storage {
 	DBObject fetchRef(DBRef dbref) {
 		return dbhandler.onFetchRef(dbref);
 	}
-		
-	public <T> T findFirst(Class<T> clazz) {
-		
-		DBObject dbobj = dbhandler.onGetFirst(collectionResolver.getCollectionForClass(clazz),
-				FieldList.valueOf(clazz));
-		if(dbobj == null)
-			return null;
-		ObjectId id = (ObjectId)dbobj.get(ID_FIELD);
-		T obj = classConverter.decode(dbobj, clazz);
-		cache.put(id, obj);
-		return obj;
-		
-	}
 	
 	public <T> List<T> findAll(Class<T> clazz) {
 		
@@ -501,14 +488,6 @@ public class Storage {
 		void onSave(String collection, DBObject dbobj);
 		
 		/**
-		 * This method must return the first object from the given collection.
-		 * 
-		 * @param collection The name of the collection to get the object from.
-		 * @return The first {@link DBObject} of the given collection.
-		 */
-		DBObject onGetFirst(String collection, FieldList fieldList);
-		
-		/**
 		 * This method must return a collection of {@link DBObject DBObjects} from
 		 * the given collection.
 		 * 
@@ -562,17 +541,17 @@ public class Storage {
 			this.db = db;
 		}
 		
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void onSave(String collection, DBObject dbobj) {
 			db.getCollection(collection).save(dbobj);
 		}
 
-		@Override
-		public DBObject onGetFirst(String collection, FieldList fieldList) {
-			DBCollection col = db.getCollection(collection);
-			return col.findOne();
-		}
-
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public Collection<DBObject> onGet(String collection, FieldList fieldlist) {
 			
@@ -594,21 +573,33 @@ public class Storage {
 			
 		}
 		
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public DBRef onCreateRef(String collection, DBObject refTo) {
 			return new DBRef(db, collection, refTo.get(ID_FIELD));
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public DBObject onFetchRef(DBRef ref) {
 			return ref.fetch();
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void onDelete(String collection, ObjectId id) {
 			db.getCollection(collection).remove(new BasicDBObject(ID_FIELD, id));
 		}	
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public boolean equals(Object obj) {
 			if (obj == null) {
@@ -624,6 +615,9 @@ public class Storage {
 			return true;
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public int hashCode() {
 			int hash = 5;

@@ -38,7 +38,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -51,7 +51,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -64,7 +64,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -77,7 +77,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -90,7 +90,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -103,7 +103,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -116,7 +116,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -129,7 +129,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -142,7 +142,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);	
 		
 	}
@@ -155,7 +155,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -168,7 +168,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);	
 		
 	}
@@ -181,7 +181,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -194,7 +194,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -207,7 +207,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -220,7 +220,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -236,7 +236,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertEquals(atc, readAtc);
 		
 	}
@@ -250,7 +250,7 @@ public class StorageArrayTest extends AbstractStorageTest {
 		
 		storage.save(atc);
 		
-		ArrayTestClass readAtc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass readAtc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertSame(readAtc.getReferenceArray()[0], readAtc.getReferenceArray()[1]);
 		
 	}

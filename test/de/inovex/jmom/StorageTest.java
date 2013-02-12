@@ -57,7 +57,7 @@ public class StorageTest extends AbstractStorageTest {
 		
 		storage.save(ptc);
 		
-		assertEquals(ptc, storage.findFirst(PlainTestClass.class));
+		assertEquals(ptc, getSingleResult(storage.findAll(PlainTestClass.class)));
 		
 	}
 	

@@ -15,11 +15,9 @@
  */
 package de.inovex.jmom;
 
-import de.inovex.jmom.Storage;
+import java.util.List;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
-import com.mongodb.ServerAddress;
-import java.net.InetAddress;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -60,6 +58,13 @@ public abstract class AbstractStorageTest {
 	@After
 	public void after() {
 		db.dropDatabase();
+	}
+	
+	public <T> T getSingleResult(List<T> list) {
+		if(list.size() != 1) {
+			fail(String.format("Result list contained %d elements. Only one element expected.", list.size()));
+		}
+		return list.get(0);
 	}
 	
 }

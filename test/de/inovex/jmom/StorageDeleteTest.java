@@ -32,13 +32,13 @@ public class StorageDeleteTest extends AbstractStorageTest {
 	
 		storage.save(obj);
 		
-		PlainTestClass found = storage.findFirst(PlainTestClass.class);
+		PlainTestClass found = getSingleResult(storage.findAll(PlainTestClass.class));
 		
 		assertEquals("Object wasn't stored", obj, found);
 		
 		storage.delete(obj);
 		
-		assertNull(storage.findFirst(PlainTestClass.class));
+		assertNull(storage.findAll(PlainTestClass.class));
 		
 	}
 	

@@ -35,7 +35,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("byteArray", 42);
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new byte[]{ 42 }, atc.getByteArray());
 		
 	}
@@ -46,7 +46,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("shortArray", 42);
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new short[]{ 42 }, atc.getShortArray());
 		
 	}	
@@ -58,7 +58,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new int[]{ 42 }, atc.getIntArray());
 		
 	}
@@ -70,7 +70,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new long[]{ 42 }, atc.getLongArray());
 		
 	}
@@ -82,7 +82,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new float[]{ 42.12f }, atc.getFloatArray(), 1E-10f);
 		
 	}
@@ -94,7 +94,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new double[]{ 42.12 }, atc.getDoubleArray(), 1E-10);
 		
 	}
@@ -106,7 +106,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new char[]{ 'x' }, atc.getCharArray());
 		
 	}
@@ -118,7 +118,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new String[]{ "test" }, atc.getStringArray());
 		
 	}
@@ -136,7 +136,7 @@ public class StorageToArrayTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj2, ArrayTestClass.class.getCanonicalName());
 		
-		ArrayTestClass atc = storage.findFirst(ArrayTestClass.class);
+		ArrayTestClass atc = getSingleResult(storage.findAll(ArrayTestClass.class));
 		assertArrayEquals(new PlainTestClass[]{ ptc }, atc.getReferenceArray());
 		
 	}

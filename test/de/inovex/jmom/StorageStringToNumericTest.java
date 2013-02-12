@@ -39,7 +39,7 @@ public class StorageStringToNumericTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, PseudoPrimitiveTestClass.class.getCanonicalName());
 		
-		return storage.findFirst(PseudoPrimitiveTestClass.class);
+		return getSingleResult(storage.findAll(PseudoPrimitiveTestClass.class));
 		
 	}
 	

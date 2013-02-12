@@ -47,7 +47,7 @@ public class StorageCharTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, PseudoPrimitiveTestClass.class.getCanonicalName());
 	
-		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = getSingleResult(storage.findAll(PseudoPrimitiveTestClass.class));
 		assertEquals("char field doesn't match.", expectedValue, res.getCharVal());
 		assertEquals("Character field doesn't match.", expectedValue, res.getCharClassVal().charValue());
 		
@@ -92,7 +92,7 @@ public class StorageCharTest extends AbstractStorageTest {
 		
 		storage.saveDBObject(dbobj, PseudoPrimitiveTestClass.class.getCanonicalName());
 		
-		PseudoPrimitiveTestClass res = storage.findFirst(PseudoPrimitiveTestClass.class);
+		PseudoPrimitiveTestClass res = getSingleResult(storage.findAll(PseudoPrimitiveTestClass.class));
 		assertEquals("char field doesn't match.", ch, res.getCharVal());
 		assertEquals("Character field doesn't match.", ch, res.getCharClassVal().charValue());
 		

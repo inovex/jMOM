@@ -37,7 +37,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("byteList", 42);
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<Byte> list = new ArrayList<Byte>();
 		list.add((byte)42);
 		assertEquals(list, ctc.getByteList());
@@ -50,7 +50,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("shortList", 42);
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<Short> list = new ArrayList<Short>();
 		list.add((short)42);
 		assertEquals(list, ctc.getShortList());
@@ -63,7 +63,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("intList", 42);
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<Integer> list = new ArrayList<Integer>();
 		list.add(42);
 		assertEquals(list, ctc.getIntList());
@@ -76,7 +76,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("longList", 42);
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<Long> list = new ArrayList<Long>();
 		list.add(42l);
 		assertEquals(list, ctc.getLongList());
@@ -89,7 +89,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("floatList", 42.21);
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<Float> list = new ArrayList<Float>();
 		list.add(42.21f);
 		assertEquals(list, ctc.getFloatList());
@@ -102,7 +102,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("doubleList", 42.21);
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<Double> list = new ArrayList<Double>();
 		list.add(42.21);
 		assertEquals(list, ctc.getDoubleList());
@@ -115,7 +115,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("charList", 'x');
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<Character> list = new ArrayList<Character>();
 		list.add('x');
 		assertEquals(list, ctc.getCharList());
@@ -128,7 +128,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("stringList", "test");
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		List<String> list = new ArrayList<String>();
 		list.add("test");
 		assertEquals(list, ctc.getStringList());
@@ -141,7 +141,7 @@ public class StorageToCollectionTest extends AbstractStorageTest {
 		DBObject dbobj = new BasicDBObject("stringSet", "test");
 		storage.saveDBObject(dbobj, CollectionTestClass.class.getCanonicalName());
 		
-		CollectionTestClass ctc = storage.findFirst(CollectionTestClass.class);
+		CollectionTestClass ctc = getSingleResult(storage.findAll(CollectionTestClass.class));
 		Set<String> set = new HashSet<String>();
 		set.add("test");
 		assertEquals(set, ctc.getStringSet());

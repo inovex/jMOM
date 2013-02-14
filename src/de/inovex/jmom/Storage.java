@@ -161,7 +161,7 @@ public class Storage {
 		saveObject(obj);		
 	}
 	
-	public void saveMultiple(Iterable<Object> objects) {
+	public void saveMultiple(Iterable<?> objects) {
 		for(Object o : objects) {
 			saveObject(o);
 		}

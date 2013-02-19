@@ -20,6 +20,7 @@ import com.mongodb.DBRef;
 import de.inovex.jmom.util.ReflectionUtil;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import org.bson.types.ObjectId;
 
 /**
  * The {@link ObjectConverter} is responsible for converting an object from database
@@ -93,7 +94,9 @@ class ObjectConverter implements Converter {
 		} else {
 			if(dbval instanceof DBRef) {
 				// Dereference database object and convert it to field type
-				obj = storage.convertObject(storage.fetchRef((DBRef)dbval), objectType);
+				DBObject dbo = storage.fetchRef((DBRef)dbval);
+				obj = storage.convertObject(dbo, objectType);
+				storage.getCache().put((ObjectId)dbo.get(Storage.ID_FIELD), obj);
 			} else {
 				obj = dbval;
 			}

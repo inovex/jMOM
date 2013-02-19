@@ -38,7 +38,7 @@ public class StorageDeleteTest extends AbstractStorageTest {
 		
 		storage.delete(obj);
 		
-		assertNull(storage.findAll(PlainTestClass.class));
+		assertEquals(0, storage.findAll(PlainTestClass.class).size());
 		
 	}
 	

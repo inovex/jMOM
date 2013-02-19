@@ -32,7 +32,7 @@ public class Storage {
 
 	private static Map<DBHandler, Storage> storages = new HashMap<DBHandler, Storage>();
 	
-	private static final String ID_FIELD = "_id";
+	static final String ID_FIELD = "_id";
 	
 	/**
 	 * Get a storage instance with a given {@link DBHandler}.
@@ -172,6 +172,7 @@ public class Storage {
 		if(id != null) {
 			dbhandler.onDelete(collectionResolver.getCollectionForClass(obj.getClass()), id);
 		}
+		cache.delete(id);
 	}
 	
 	DBObject saveObject(Object obj) {
@@ -192,8 +193,7 @@ public class Storage {
 		return dbobj;
 	}
 	
-	DBObject saveDBObject(DBObject dbobj, String collection) {
-		
+	DBObject saveDBObject(DBObject dbobj, String collection) {	
 		dbhandler.onSave(collection, dbobj);
 		return dbobj;
 	}
@@ -212,9 +212,9 @@ public class Storage {
 		
 		Collection<DBObject> dbobjects = dbhandler.onGet(collectionResolver.getCollectionForClass(clazz),
 				FieldList.valueOf(clazz));
-		
+
 		List<DecodeThread<T>> threads = new LinkedList<DecodeThread<T>>();
-				
+
 		for(DBObject dbobj : dbobjects) {
 			
 			DecodeThread<T> t = new DecodeThread<T>(dbobj, clazz);
@@ -295,6 +295,11 @@ public class Storage {
 		 */
 		public void put(ObjectId id, Object object);
 		
+		/**
+		 * Deletes an {@link ObjectId} and its reference from cache.
+		 */
+		public void delete(ObjectId id);
+		
 	}
 	
 	/**
@@ -351,6 +356,17 @@ public class Storage {
 		public void put(ObjectId id, Object obj) {	
 			objectIds.put(obj, id);
 			lastObject.put(id, new WeakReference<Object>(obj));		
+		}
+		
+		@Override
+		public void delete(ObjectId id) {
+			lastObject.remove(id);
+			for(Map.Entry<Object, ObjectId> entry : objectIds.entrySet()) {
+				if(entry.getValue().equals(id)) {
+					objectIds.remove(entry.getKey());
+					break;
+				}
+			}
 		}
 		
 	}	

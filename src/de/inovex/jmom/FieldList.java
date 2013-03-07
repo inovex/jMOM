@@ -40,9 +40,11 @@ public class FieldList implements Iterable<Field> {
 	}
 	
 	private final Collection<Field> fields;
+	private final String className;
 	
 	private FieldList(Class<?> clazz) {
 		this.fields = ReflectionUtil.getAllFields(clazz);
+		this.className = clazz.getName();
 	}
 	
 	public int size() {
@@ -52,6 +54,28 @@ public class FieldList implements Iterable<Field> {
 	@Override
 	public Iterator<Field> iterator() {
 		return fields.iterator();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final FieldList other = (FieldList) obj;
+		if ((this.className == null) ? (other.className != null) : !this.className.equals(other.className)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 79 * hash + (this.className != null ? this.className.hashCode() : 0);
+		return hash;
 	}
 	
 }

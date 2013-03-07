@@ -183,7 +183,8 @@ public class Storage {
 			dbobj.put(ID_FIELD, id);
 		}
 		
-		dbhandler.onSave(collectionResolver.getCollectionForClass(obj.getClass()), dbobj);
+		dbhandler.onSave(collectionResolver.getCollectionForClass(obj.getClass()), dbobj, 
+				FieldList.valueOf(obj.getClass()));
 		
 		if(id == null) {
 			id = (ObjectId)dbobj.get(ID_FIELD);
@@ -193,8 +194,12 @@ public class Storage {
 		return dbobj;
 	}
 	
+	/**
+	 * This method is only needed for the jUnit tests to insert test objects into the Storage.
+	 * Don't use this method anywhere else.
+	 */
 	DBObject saveDBObject(DBObject dbobj, String collection) {	
-		dbhandler.onSave(collection, dbobj);
+		dbhandler.onSave(collection, dbobj, null);
 		return dbobj;
 	}
 	
@@ -247,6 +252,13 @@ public class Storage {
 		
 		return objects;
 
+	}
+	
+	public <T> T findByObjectId(Class<T> clazz, ObjectId id) {
+		DBObject dbo = dbhandler.onGetById(collectionResolver.getCollectionForClass(clazz), id);
+		T obj = classConverter.decode(dbo, clazz);
+		cache.put(id, obj);
+		return obj;
 	}
 	
 	<T> T convertObject(DBObject dbobj, Class<T> clazz) {
@@ -501,7 +513,7 @@ public class Storage {
 		 * @param collection The name of the collection to save that object too.
 		 * @param dbobj The object to store to database.
 		 */
-		void onSave(String collection, DBObject dbobj);
+		void onSave(String collection, DBObject dbobj, FieldList fieldList);
 		
 		/**
 		 * This method must return a collection of {@link DBObject DBObjects} from
@@ -511,6 +523,16 @@ public class Storage {
 		 * @return A collection of all {@link DBObject} from this collection.
 		 */
 		Collection<DBObject> onGet(String collection, FieldList fieldList);
+		
+		/**
+		 * This method must return an object by its {@link ObjectId}. Since {@link ObjectId ObjectIds}
+		 * have to be unique among different collections, the collection doesn't need to be checked 
+		 * for the object the implementation returns.
+		 *
+		 * @param collection The name of the collection. Doesn't need to be checked.
+		 * @param id The id of the object, that should be returned.
+		 */
+		DBObject onGetById(String collection, ObjectId id);
 		
 		/**
 		 * This method is called, whenever a {@link DBRef} to another object needs to 
@@ -561,7 +583,7 @@ public class Storage {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onSave(String collection, DBObject dbobj) {
+		public void onSave(String collection, DBObject dbobj, FieldList fieldlist) {
 			db.getCollection(collection).save(dbobj);
 		}
 
@@ -587,6 +609,14 @@ public class Storage {
 			
 			return objects;
 			
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public DBObject onGetById(String collection, ObjectId id) {
+			return db.getCollection(collection).findOne(new BasicDBObject(ID_FIELD, id));
 		}
 		
 		/**

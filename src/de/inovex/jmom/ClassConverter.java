@@ -95,6 +95,8 @@ class ClassConverter {
 	 */
 	<T> T decode(DBObject dbobj, Class<T> clazz) {
 		
+		if(dbobj == null) return null;
+		
 		FieldList fields = FieldList.valueOf(clazz);	
 		
 		T obj = newInstance(clazz);
